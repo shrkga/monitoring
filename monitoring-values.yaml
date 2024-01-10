@@ -42,3 +42,6 @@ grafana:
   image:
     tag: latest
     # tag: 10.0.2
+  persistence:
+    type: pvc
+    enabled: true

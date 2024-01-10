@@ -1,0 +1,53 @@
+stages:
+  - test
+  - deploy
+
+deploy:
+  stage: deploy
+  image: dtzar/helm-kubectl:3.13
+  variables:
+    KUBE_CONTEXT: ${CI_PROJECT_PATH}:yc-k8s
+    KUBE_NAMESPACE: monitoring
+    host: ${KUBE_NAMESPACE}.${CI_PAGES_DOMAIN}
+  environment:
+    name: ${KUBE_NAMESPACE}
+    url: http://${host}
+  before_script:
+    - helm repo add grafana https://grafana.github.io/helm-charts
+    - helm repo update
+  script:
+    - kubectl config get-contexts
+    - kubectl config use-context ${KUBE_CONTEXT}
+    - kubectl describe namespace "${KUBE_NAMESPACE}" || kubectl create namespace "${KUBE_NAMESPACE}"
+    - >
+      mkdir -p search-engine/chats
+      helm dep build search-engine
+      echo "Deploy ${KUBE_NAMESPACE}"
+      for HCMD in 'helm template' 'helm upgrade --install --wait --atomic'
+      do
+        ${HCMD} \
+          --namespace="$KUBE_NAMESPACE" --create-namespace \
+          --version="$CI_PIPELINE_ID-$CI_JOB_ID" \
+          --values monitoring-values.yaml \
+          loki-stack grafana/loki-stack
+      done
+      kubectl apply -f grafana-ingress.yaml
+      kubectl get secret --namespace monitoring loki-stack-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+  only:
+    refs:
+      - main
+  except:
+    - triggers
+
+test:
+  stage: test
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - env
+    - exit 0
+  only:
+    - triggers
+    - branches
+  except:
+    - main

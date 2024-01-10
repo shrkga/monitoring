@@ -8,6 +8,6 @@ helm upgrade --install \
     --values monitoring-values.yaml \
     loki-stack grafana/loki-stack
 
-kubectl get secret --namespace monitoring loki-stack-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
-
 kubectl apply -f grafana-ingress.yaml
+
+kubectl get secret --namespace monitoring loki-stack-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
