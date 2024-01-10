@@ -6,7 +6,7 @@ deploy:
   stage: deploy
   image: dtzar/helm-kubectl:3.13
   variables:
-    KUBE_CONTEXT: ${CI_PROJECT_PATH}:yc-k8s
+    KUBE_CONTEXT: ${CI_PROJECT_PATH}:yc-monitoring-k8s
     KUBE_NAMESPACE: monitoring
   before_script:
     - helm repo add grafana https://grafana.github.io/helm-charts
