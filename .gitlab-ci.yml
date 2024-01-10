@@ -12,10 +12,8 @@ deploy:
     - kubectl config get-contexts
     - kubectl config use-context ${KUBE_CONTEXT}
     - kubectl describe namespace "${KUBE_NAMESPACE}" || kubectl create namespace "${KUBE_NAMESPACE}"
-    - helm repo add grafana https://grafana.github.io/helm-charts
-    - helm repo update
     - echo "Deploy ${KUBE_NAMESPACE}"
-    - helm upgrade loki-stack grafana/loki-stack --install --wait --atomic --namespace "$KUBE_NAMESPACE" --version "$CI_PIPELINE_ID-$CI_JOB_ID" --values monitoring-values.yaml
+    - helm upgrade --install loki-stack grafana/loki-stack --repo https://grafana.github.io/helm-charts --namespace "$KUBE_NAMESPACE" --version "$CI_PIPELINE_ID-$CI_JOB_ID" --values monitoring-values.yaml
     - kubectl apply -f grafana-ingress.yaml
     - kubectl get secret --namespace monitoring loki-stack-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
   only:
