@@ -19,10 +19,8 @@ deploy:
     - kubectl config get-contexts
     - kubectl config use-context ${KUBE_CONTEXT}
     - kubectl describe namespace "${KUBE_NAMESPACE}" || kubectl create namespace "${KUBE_NAMESPACE}"
+    - echo "Deploy ${KUBE_NAMESPACE}"
     - >
-      mkdir -p search-engine/chats
-      helm dep build search-engine
-      echo "Deploy ${KUBE_NAMESPACE}"
       for HCMD in 'helm template' 'helm upgrade --install --wait --atomic'
       do
         ${HCMD} \
@@ -31,8 +29,8 @@ deploy:
           --values monitoring-values.yaml \
           loki-stack grafana/loki-stack
       done
-      kubectl apply -f grafana-ingress.yaml
-      kubectl get secret --namespace monitoring loki-stack-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+    - kubectl apply -f grafana-ingress.yaml
+    - kubectl get secret --namespace monitoring loki-stack-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
   only:
     refs:
       - main
