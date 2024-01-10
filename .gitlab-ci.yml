@@ -8,13 +8,12 @@ deploy:
   variables:
     KUBE_CONTEXT: ${CI_PROJECT_PATH}:yc-k8s
     KUBE_NAMESPACE: monitoring
-  before_script:
-    - helm repo add grafana https://grafana.github.io/helm-charts
-    - helm repo update
   script:
     - kubectl config get-contexts
     - kubectl config use-context ${KUBE_CONTEXT}
     - kubectl describe namespace "${KUBE_NAMESPACE}" || kubectl create namespace "${KUBE_NAMESPACE}"
+    - helm repo add grafana https://grafana.github.io/helm-charts
+    - helm repo update
     - echo "Deploy ${KUBE_NAMESPACE}"
     - helm upgrade loki-stack grafana/loki-stack --install --wait --atomic --namespace "$KUBE_NAMESPACE" --version "$CI_PIPELINE_ID-$CI_JOB_ID" --values monitoring-values.yaml
     - kubectl apply -f grafana-ingress.yaml
