@@ -4,6 +4,9 @@ stages:
 
 image: dtzar/helm-kubectl:3.13
 
+variables:
+  KUBE_CONTEXT: otus/search_engine_deploy:yc-k8s
+
 deploy:
   stage: deploy
   variables:
@@ -15,7 +18,7 @@ deploy:
   script:
     - echo "Deploy ${KUBE_NAMESPACE}"
     - helm upgrade --install --wait --atomic
-        --namespace "${KUBE_NAMESPACE}" --create-namespace
+        --namespace "$KUBE_NAMESPACE" --create-namespace
         --values monitoring-values.yaml
         loki-stack grafana/loki-stack
     - kubectl get secret --namespace monitoring loki-stack-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo
