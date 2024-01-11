@@ -4,9 +4,6 @@ stages:
 
 image: dtzar/helm-kubectl:3.13
 
-before_script:
-  - kubectl config use-context ${KUBE_CONTEXT}
-
 deploy:
   stage: deploy
   variables:
@@ -14,6 +11,7 @@ deploy:
   before_script:
     - helm repo add grafana https://grafana.github.io/helm-charts
     - helm repo update
+    - kubectl config use-context ${KUBE_CONTEXT}
   script:
     - echo "Deploy ${KUBE_NAMESPACE}"
     - helm upgrade --install --wait --atomic
@@ -28,6 +26,8 @@ deploy:
 
 apply:
   stage: apply
+  before_script:
+    - kubectl config use-context ${KUBE_CONTEXT}
   script:
     - echo "Apply grafana-ingress"
     - kubectl apply -f grafana-ingress.yaml
