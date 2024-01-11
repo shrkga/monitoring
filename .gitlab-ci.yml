@@ -19,13 +19,10 @@ deploy:
         --values monitoring-values.yaml
         loki-stack grafana/loki-stack
     - kubectl get secret --namespace monitoring loki-stack-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo
+  only:
+    - main
   rules:
     - if: '$CI_COMMIT_TAG != null'
-  only:
-    refs:
-      - main
-  except:
-    - triggers
 
 apply:
   stage: apply
