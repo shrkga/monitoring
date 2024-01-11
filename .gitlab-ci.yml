@@ -22,8 +22,8 @@ deploy:
   only:
     - main
     # - tags
-  except:
-    - branches
+  # except:
+  #   - branches
 
 apply:
   stage: apply
