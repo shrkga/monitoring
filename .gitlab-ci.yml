@@ -11,8 +11,8 @@ deploy:
   before_script:
     - helm repo add grafana https://grafana.github.io/helm-charts
     - helm repo update
-  script:
     - kubectl config use-context ${KUBE_CONTEXT}
+  script:
     - echo "Deploy ${KUBE_NAMESPACE}"
     - helm upgrade --install --wait --atomic
         --namespace "$KUBE_NAMESPACE" --create-namespace
