@@ -20,10 +20,9 @@ deploy:
         loki-stack grafana/loki-stack
     - kubectl get secret --namespace monitoring loki-stack-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo
   only:
-    - main
-    # - tags
-  # except:
-  #   - branches
+    - tags
+  except:
+    - branches
 
 apply:
   stage: apply
