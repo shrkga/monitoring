@@ -1,10 +1,17 @@
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: grafana
   namespace: monitoring
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: nginx
+  tls:
+  - hosts:
+    - grafana.pages.otus.kga.spb.ru
+    secretName: letsencrypt-grafana
   rules:
   - host: grafana.pages.otus.kga.spb.ru
     http:

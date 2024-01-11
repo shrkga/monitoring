@@ -6,18 +6,16 @@ deploy:
   stage: deploy
   image: dtzar/helm-kubectl:3.13
   variables:
-    KUBE_CONTEXT: ${CI_PROJECT_PATH}:yc-monitoring-k8s
+    KUBE_CONTEXT: otus/search_engine_deploy:yc-k8s
     KUBE_NAMESPACE: monitoring
   before_script:
     - helm repo add grafana https://grafana.github.io/helm-charts
     - helm repo update
   script:
-    - kubectl config get-contexts
     - kubectl config use-context ${KUBE_CONTEXT}
-    - kubectl describe namespace "${KUBE_NAMESPACE}" || kubectl create namespace "${KUBE_NAMESPACE}"
     - echo "Deploy ${KUBE_NAMESPACE}"
     - helm upgrade --install --wait --atomic
-        --namespace "$KUBE_NAMESPACE"
+        --namespace "$KUBE_NAMESPACE" --create-namespace
         --values monitoring-values.yaml
         loki-stack grafana/loki-stack
     - kubectl apply -f grafana-ingress.yaml
