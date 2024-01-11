@@ -1,10 +1,10 @@
+image: dtzar/helm-kubectl:3.13
 stages:
-  - test
   - deploy
+  - apply
 
 deploy:
   stage: deploy
-  image: dtzar/helm-kubectl:3.13
   variables:
     KUBE_CONTEXT: otus/search_engine_deploy:yc-k8s
     KUBE_NAMESPACE: monitoring
@@ -18,23 +18,22 @@ deploy:
         --namespace "$KUBE_NAMESPACE" --create-namespace
         --values monitoring-values.yaml
         loki-stack grafana/loki-stack
-    - kubectl apply -f grafana-ingress.yaml
     - kubectl get secret --namespace monitoring loki-stack-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo
+  rules:
+    - if: '$CI_COMMIT_TAG != null'
   only:
     refs:
       - main
   except:
     - triggers
 
-test:
-  stage: test
-  variables:
-    GIT_STRATEGY: none
+apply:
+  stage: apply
   script:
-    - env
-    - exit 0
+    - echo "Apply grafana-ingress"
+    - kubectl apply -f grafana-ingress.yaml
   only:
-    - triggers
-    - branches
+    refs:
+      - main
   except:
-    - main
+    - triggers
