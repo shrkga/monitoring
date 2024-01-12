@@ -45,3 +45,6 @@ grafana:
   persistence:
     type: pvc
     enabled: true
+  grafana.ini:
+    server:
+      root_url: https://grafana.pages.otus.kga.spb.ru
