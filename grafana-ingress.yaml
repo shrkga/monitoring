@@ -10,10 +10,10 @@ spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - grafana.pages.otus.kga.spb.ru
+    - ${GRAFANA_URL}
     secretName: letsencrypt-grafana
   rules:
-  - host: grafana.pages.otus.kga.spb.ru
+  - host: ${GRAFANA_URL}
     http:
       paths:
       - path: /
