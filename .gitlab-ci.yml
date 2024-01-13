@@ -5,7 +5,7 @@ stages:
 image: dtzar/helm-kubectl:3.13
 
 variables:
-  GRAFANA_URL: grafana.${CI_PAGES_DOMAIN}
+  GRAFANA_DOMAIN: grafana.${CI_PAGES_DOMAIN}
 
 deploy:
   stage: deploy
@@ -20,7 +20,7 @@ deploy:
     - helm upgrade --install --wait --atomic
         --namespace "${KUBE_NAMESPACE}" --create-namespace
         --values monitoring-values.yaml
-        --set grafana.'grafana\.ini'.server.root_url=https://${GRAFANA_URL}
+        --set grafana.'grafana\.ini'.server.root_url=https://${GRAFANA_DOMAIN}
         loki-stack grafana/loki-stack
     - kubectl get secret --namespace monitoring loki-stack-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo
   only:
