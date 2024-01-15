@@ -10,10 +10,10 @@ spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - ${GRAFANA_URL}
+    - ${GRAFANA_DOMAIN}
     secretName: letsencrypt-grafana
   rules:
-  - host: ${GRAFANA_URL}
+  - host: ${GRAFANA_DOMAIN}
     http:
       paths:
       - path: /
