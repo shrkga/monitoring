@@ -1,6 +1,5 @@
 stages:
   - deploy
-  - apply
 
 image: dtzar/helm-kubectl:3.13
 
@@ -19,24 +18,12 @@ deploy:
     - echo "Deploy ${KUBE_NAMESPACE}"
     - helm upgrade --install --wait --atomic
         --namespace "${KUBE_NAMESPACE}" --create-namespace
-        --values monitoring-values.yaml
-        --set grafana.'grafana\.ini'.server.root_url=https://${GRAFANA_DOMAIN}
+        --values values.yaml
+        --set grafana.ingress.hosts={${GRAFANA_DOMAIN}}
+        --set grafana.ingress.tls[0].hosts={${GRAFANA_DOMAIN}}
         loki-stack grafana/loki-stack
     - kubectl get secret --namespace monitoring loki-stack-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo
   only:
     - tags
   except:
     - branches
-
-apply:
-  stage: apply
-  before_script:
-    - kubectl config use-context ${KUBE_CONTEXT}
-  script:
-    - echo "Apply grafana-ingress"
-    - envsubst < grafana-ingress.yaml | kubectl apply -f -
-  only:
-    - main
-    - tags
-  except:
-    - triggers
